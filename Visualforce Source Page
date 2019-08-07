@@ -1,0 +1,221 @@
+<apex:page renderAs="pdf"  applyBodyTag="false" standardController="Opportunity" extensions="ContractAssumptionsCtrl" >
+            <head>
+                <style type="text/css" media="print">
+                       @page {
+                               margin-top: 3cm;
+                               margin-bottom: 3cm;
+                                 @top-center {
+                                       content: element(header);
+                               }
+                               @bottom-left {
+                                     content: element(footer);
+                               }
+                            }
+                                     div.header {
+                                      padding: 0px;
+                                      position: running(header);
+                           }
+                       div.footer {
+                               display: block;
+                               padding: 5px;
+                               position: running(footer);
+                               margin-bottom: 10px;
+
+                      }
+                                     .pagenumber:before {
+                                        content: counter(page);
+                       }
+                                   .pagecount:before {
+                             content: counter(pages);
+                        }
+                        
+                      hr { display: block; height: 0.25px; border: 0; border-top: 1.5px solid #f05133; }
+                      
+                    </style>
+              </head>
+                                  
+           <div class="header">
+                <apex:image id="header_image" value="{!$Resource.ML_Letterhead_Header}" width="725" height="112" style="float:center"/>
+           </div>
+           <div class="footer">
+               <apex:image id="footer_image" value="{!$Resource.ML_Letterhead_Footer}" width="725" height="75"/>
+                <div style="font-size:14px;">
+                Page <span class="pagenumber"/> of <span class="pagecount"/>
+                </div>                         
+          </div>
+          <div class="content">
+              <div style="font-size:14px">
+                 
+              
+           {!MONTH(TODAY())}/{!DAY(TODAY())}/{!YEAR(TODAY())}<br/><br/>
+           {!Opportunity.Account.name}<br/>
+           Attn: {!Opportunity.Contact_Name__c}<br/>
+           {!Opportunity.AVSFQB__Billing_Address__c}<br/>
+           {!Opportunity.AVSFQB__Billing_City__c},&nbsp;{!Opportunity.AVSFQB__Billing_State__c}&nbsp;{!Opportunity.AVSFQB__Billing_Zip__c}<br/><br/>
+           
+           Proposal-<br/>
+           Master Locators, Inc. (ML) is pelased to provide Master Locators with a proposal for geophysical services in <br/> 
+           support of the {!Opportunity.name} project in {!Opportunity.City__c}, {!Opportunity.State__c}. The following proposal details the <br/> 
+           technologies and methodology prosposed to complete the objectives of this investigation.<br/>
+           <br/>
+            <b>SCOPE OF WORK</b> <br/><hr/>
+           <br/><br/>
+           Project Location: {!Opportunity.Site_Address__c},&nbsp;{!Opportunity.City__c},&nbsp;{!Opportunity.State__c}&nbsp;{!Opportunity.Zip_Code__c}<br/>
+           <br/>
+           ML will provide vacuum excavation services to perform test holes on underground utilities ins upport of the below <br/>
+           procedures. ML will provide this Quality Level A utility data in support of the standard ASCE 38-02. Test hole data <br/>
+           for each test hole will be recorded including utility type, size, material, horizontal location and vertical elevation. <br/>
+           <br/>
+           {!Opportunity.Contact_Name__c},<br/>
+           <br/>
+           <apex:pageBlock >
+               <apex:pageBlockTable value="{!Opportunity}" var="OPP">
+                   <apex:column >
+                       <b>Vacuum Excavation Assumptions</b><br/>
+                       <br/>•&nbsp;
+                       <apex:outputText escape="false" value="{!VacAssumpString}"/><br/>•&nbsp;
+                       <apex:outputText escape="false" value="{!AddAssumpString}"/>
+                       </apex:column>
+               </apex:pageBlockTable>
+           </apex:pageBlock>           
+           <br/>
+           <b>ESTIMATED TIME TO COMPLETE FIELDWORK</b> <br/><hr/>
+           <br/>
+           Estimate: {!Opportunity.Estimate__c}<br/>
+           <br/>
+           We are committed to accommodating your scheduling needs. To help us meet your needs, while achieving the highest<br/>
+           level of quality and service, we respectfully request one week notice prior to mobilizing. <br/>
+           <br/>
+           ADDITIONAL SERVICES AVAILABLE UPON REQUEST<br/>
+           <br/>
+           Concrete Imaging | CCTV Pipe Inspection | Vacuum Excavation (Air-Knife/Hydro) | Leak Detection | 24 Hour Service <br/>
+           <br/>          
+           <b>DELIVARABLES</b> <br/><hr/>
+           <br/>
+           The following delivarables are included in the pricing provided below:<br/>
+           <br/> 
+                 <apex:variable var="Deliverables_list" value="{!SUBSTITUTE(Opportunity.Deliverables__c,';',' | ')}"/>
+                 <apex:pageBlock >
+                    <apex:pageBlockTable value="{!Opportunity}" var="Opp" columns="1" style="width:100%">
+                        <apex:column width="100%" style="border:0.25px solid black; font-size:15px" value="{!Deliverables_list}" headerValue="Deliverables"/>
+                    </apex:pageBlockTable>
+                 </apex:pageBlock> <br/>
+                 <br/>
+                 Test hole data sheets will be provided for each test hole excavated when utilities are exposed.  Each data sheet will <br/>
+                 provide information regarding utility type, pipe size, pipe material, condition and elevation as well as a location sketch. <br/>
+                 <br/>
+                 <b>PRICING</b> <br/><hr/>
+                 <br/>
+                 </div>
+                 <apex:form >
+                    <apex:pageBlock title="Services">
+                        <apex:pageblockTable value="{!Opportunity.opportunityLineItems}" var="OP" border="1px" columns="4" style="width:100%; font-size:14px">
+                            <apex:column value="{!OP.priceBookEntry.product2.name}" title="Service Name"> </apex:column> 
+                            <apex:column value="{!OP.Quantity}"> </apex:column>
+                            <apex:column value="{!OP.unitPrice}"/> 
+                            <apex:column value="{!OP.totalPrice}"> </apex:column>
+                        </apex:pageblockTable>
+                    </apex:pageBlock>
+                 <br/>
+                    <apex:pageBlock >
+                         <apex:pageblockTable value="{!Opportunity}" var="OP" border="1px" columns="1" style="float:right; width:30%; font-size:14px">
+                             <apex:column value="{!OP.amount}"/>
+                         </apex:pageblockTable>
+                    </apex:pageBlock>
+                 </apex:form>
+                 <br/><br/><br/>
+                 <div style="font-size:14px">
+                 The above quoted pricing is based on information provided at time of quotation and includes all equipment, travel, <br/>
+                 and labor for work performed during normal business hours.  Pricing is valid for 30 days.    All work will be prorated <br/>
+                 and invoiced in accordance with following procedures: <br/>
+                 <br/>
+                 <b>STANDARD INVOICING PROCEDURES</b> <br/><hr/>
+                 <br/>
+                 Unless stated otherwise: <br/>
+                 <br/>
+                 Vacuum excavation services include 8 hours on site.  Mobilization is applied for travel time at $50 per person from <br/>
+                 the Philadelphia regional office.  If less than 8 hours are required on site, the mobilization rates are pro-rated <br/>
+                 accordingly. <br/>
+                 <br/>
+                 The per diem rate is $200 per day per person for overnight lodging and meals.  A 25% expedite fee will apply to any <br/>
+                 service requested within 48 hours of call and provided during normal business hours of 7:30am – 4pm, Monday <br/>
+                 through Friday.  A 50% overtime fee will apply to work requested before 7:30am or after 4pm on weekdays and <br/>
+                 anytime on Saturday, Sunday, and Holidays. <br/>
+                 <br/>
+                 <b>CANCELLATION PROCEDURES</b><br/><hr/>
+                 <br/>
+                 We understand that schedules can change for any number of reasons.  We respectfully request at least 24 hours advance <br/>
+                 notice for cancellations.  However, a cancellation fee of $250 will be assessed for any cancellation that occurs after <br/>
+                 we mobilize a technician to your project site. <br/>
+                 <br/>
+                 <b>PROCEDURES AND CONDITIONS –VACUUM EXCAVATION</b><br/><hr/>
+                 <br/>
+                 Master Locators provides vacuum excavation services with air to safely locate and expose underground utilities. <br/>
+                 Vacuum excavation is a fast, non-destructive, cost effective and accurate process to safely locate underground utilities <br/>
+                 when utility conflicts exist or when precise excavation within congested areas is required.  Master Locators also <br/>
+                 performs vacuum excavation services to obtain Quality Level A utility information in accordance with ASCE 38-02 <br/>
+                 Standard Guidelines for the Collection and Depiction of Existing Subsurface Utility Data. <br/>
+                 <br/>
+                 Master Locators uses air knife and vacuum excavation systems to dig eight (8) to twelve (12) inch diameter test holes <br/>
+                 to expose underground utilities.  Test hole depths will depend upon the soil conditions and ground water table <br/>
+                 elevations of the area to be excavated.  The number of test holes performed daily will also be dependent upon the soil <br/>
+                 conditions and test hole depths required to reach the utility. <br/>
+                 <br/>
+                 Under certain circumstances and soil conditions, vacuum excavation services will become useless such as in rocky <br/>
+                 soils or in soils with high water saturations.  Master Locators will immediately notify the client when these <br/>
+                 circumstances exist.  Continued excavations in these conditions is at the sole discretion of the client.  Master Locators <br/>
+                 makes no guarantees or warranties that utilities can be exposed in these conditions. <br/>
+                 <br/>
+                 All excavated soils are temporarily stored in the vacuum spoils tank and subsequently backfilled into the test hole and <br/>
+                 compacted for proper temporary restoration.  When excavating test holes underneath asphalt or concrete surfaces (if <br/>
+                 required), Master Locators will saw-cut a square hole.  Unless explicitly indicated, restoration of the asphalt or <br/>
+                 concrete surfaces is not included within this quotation.   When excavating test holes underneath asphalt or concrete <br/>
+                 surfaces, the number of test holes completed in a day will be reduced. <br/>
+                 <br/>
+                 Test hole locations will be coordinated with the client or staked in the field by the client prior to performing work. <br/>
+                 Any utility designations that are required are not included with vacuum excavation services. <br/>
+                 <br/>
+                 For hydro excavations, a water source and dump site must be provided on-site by the client. <br/>
+                 <br/>
+                 For larger excavations, client is responsible to provide and install shoring and de-watering if necessary. <br/>
+                 <br/>
+                 <b>CONDITIONS</b><br/><hr/>
+                 <br/>
+                 ML will always stand behind its work and seeks to achieve quality through the uniformity and predictability of the <br/>
+                 services we provide.  In the event that a quality issue occurs, ML requests notification within 24 hours.  We will send <br/>
+                 a representative to the site within 24 hours of notice to review the work and investigate root cause. <br/>
+                 <br/>
+                 <b>ACCEPTANCE OF AGREEMENT</b><br/><hr/>
+                 <br/>
+                 Thank you for the opportunity to quote this project.  We look forward to working with you. <br/>
+                 <br/>
+                 Sincerely, <br/>
+                 <br/>
+                 {!Opportunity.Owner.name} <br/>
+                 {!Opportunity.Owner.title} <br/>
+                 <br/>
+                 <apex:outputText value="{!Opportunity.owner.Signature__c}" escape="false"/>
+                 <br/>
+                 Contracted By: {!Opportunity.Account.name} <br/>
+                 <br/>
+                 We accept these conditions and operating procedures as stated in this letter.  Any PO or contracts issued to ML, Inc. <br/>
+                 for the performance of services constitutes acceptance of these procedures and conditions.  Penalty if payment is not <br/>
+                 made within 30 days is 2% for each month or portion of month overdue. <br/>
+                 <br/>
+                 Company Name:  _________________________________________<br/>
+                 <br/>
+                 Print Name/Title:  ________________________________________ <br/>
+                 <br/>
+                 Sign:        _______________________________________________  <br/>
+                 <br/>
+                 Date:     _________________________________________________ <br/>
+                 <br/>
+                 Client PO Number: {!Opportunity.Revised_Quote__c} <br/>
+                 <br/>
+                 <br/>
+             
+             </div>
+               
+          </div>
+           
+</apex:page>

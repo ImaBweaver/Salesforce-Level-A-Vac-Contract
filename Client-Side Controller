@@ -1,0 +1,128 @@
+({
+    savePDF : function(cmp, event, helper) {
+        
+        var button_name = event.currentTarget.name;
+        
+        if(button_name == 'button1'){
+        
+            var action = cmp.get("c.savePDFOpportunity");
+            
+            
+            action.setParams({parentId : cmp.get("v.recordId")});
+                 
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+    
+                if (state === "SUCCESS") {
+                    alert('File saved successfully');
+                    
+                }
+            });
+            $A.enqueueAction(action);
+        }
+        
+        else if (button_name == 'button2'){
+            var frame = document.getElementById("myFrame");
+            frame.src=frame.src;
+        }
+        
+        else if (button_name == 'button3'){
+            alert('you pressed button 3');
+        }
+
+        else if (button_name == 'button4'){
+                
+              var action = cmp.get("c.SendProposaltoClient");
+           
+            
+            action.setParams({parentId : cmp.get("v.recordId")});;
+            
+                 
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+    
+                if (state === "SUCCESS") {
+                    alert('File saved successfully');
+                    
+                }
+            });
+            $A.enqueueAction(action);
+        }
+        
+        else{ alert('ERROR: Contact IT Administrator')}
+
+    },
+    
+    openModel: function(component, event, helper) {
+      // for Display Model,set the "isOpen" attribute to "true"
+      component.set("v.isOpen", true);
+        
+        var action = component.get("c.getAdditional_Assumptions");
+        action.setParams({recordId : component.get("v.recordId")});
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS"){
+                var result = response.getReturnValue();
+        		component.set("v.CurrentAdditionalAssumptions", result);
+        	}
+        });
+        $A.enqueueAction(action); 
+   },
+    
+    closeModel: function(component, event, helper) {
+      // for Hide/Close Model,set the "isOpen" attribute to "Fasle"  
+      component.set("v.isOpen", false);
+        
+      var action = component.get("c.UpdateAssumptions");
+      action.setParams({recordId : "hi there"});
+      action.setParams({additonalAssumptions : component.get("v.CurrentAdditionalAssumptions")});
+      action.setCallback(this, function(response) {
+          var state = response.getState();
+      });
+      $A.enqueueAction(action);
+        
+   },
+    
+        doInit: function(component, event, helper) {
+        var action = component.get("c.getAssumptionsPiklistValues");
+        action.setParams({recordId : component.get("v.recordId")});
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS"){
+                var result = response.getReturnValue();
+                var plValues = [];
+                var defaultValues = [];
+                for (var i = 0; i < result[0].length; i++) {
+                    plValues.push({
+                        label: result[0][i],
+                        value: result[0][i]
+                    });
+                }
+                for (var j=0; j < result[1].length; j++){
+                    defaultValues.push({
+                        label: result[1][j],
+                        value: result[1][j]                    
+                    });
+                }
+                console.log(defaultValues);
+                console.log(plValues);
+                component.set("v.VacAssumptionsList", plValues);	
+            }});
+        $A.enqueueAction(action);
+    },
+     
+    handleVacAssumptionChange: function (component, event, helper) {
+        //Get the Selected values   
+        var selectedValues = event.getParam("value");
+         
+        //Update the Selected Values  
+        component.set("v.selectedVacAssumptionsList", selectedValues);
+    },
+     
+    getSelectedVacAssumptions : function(component, event, helper){
+        //Get selected Genre List on button click 
+        var selectedValues = component.get("v.selectedVacAssumptionsList");
+        console.log('Selected Assumption(s)-' + selectedValues);
+    },
+    
+})
